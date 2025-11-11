@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gold Blockchain </title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://cdn.jsdelivr.net/npm/@perawallet/connect/dist/pera-wallet-connect.min.js"></script>
+
+  <style>
+    body { font-family: Arial, sans-serif; background: #f3f4f6; margin:0; padding:20px; color:#111827; }
+    .container { max-width:1100px; margin:0 auto; }
+    .header { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:20px; }
+    .brand { font-weight:700; font-size:24px; }
+    .card { background:#fff; border-radius:10px; padding:16px; box-shadow:0 6px 18px rgba(15,23,42,0.06); }
+    .grid{display:grid;gap:16px}
+    .grid-3 { grid-template-columns: 1fr; }
+    @media(min-width:768px){ .grid-3{ grid-template-columns: repeat(3,1fr); } }
+    button{ cursor:pointer; border:0; padding:8px 12px; border-radius:8px; }
+    .btn-primary{ background:#f59e0b; color:#111827; }
+    .btn-ghost{ background:transparent; border:1px solid #e5e7eb; color:#111827; }
+    input{ padding:8px; border-radius:6px; border:1px solid #e5e7eb; width:100%; box-sizing:border-box; }
+    .mt{ margin-top:12px }
+    footer{ color:#6b7280; margin-top:20px; font-size:13px; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script>
+    const e = React.createElement;
+    const peraWallet = new PeraWalletConnect.PeraWalletConnect();
+
+    function useGoldPrice() {
+      const [price,setPrice] = React.useState(null);
+      React.useEffect(()=>{
+        setPrice(2300); // default mock
+        const iv = setInterval(()=>setPrice(p => +(p + (Math.random()*4 - 2)).toFixed(2)), 2500);
+        return ()=>clearInterval(iv);
+      },[]);
+      return price;
+    }
+
+    function Header({onNav, walletAddress, signOut}) {
+      return e('div',{className:'header container'},
+        e('div',{className:'brand'},'GoldChain'),
+        e('div',null,
+          walletAddress 
+            ? e('button',{className:'btn-ghost', onClick:signOut}, walletAddress.substring(0,6)+'...') 
+            : e('button',{className:'btn-primary', onClick:()=>onNav('/wallet')}, 'Connect Wallet')
+        )
+      );
+    }
+
+    function Home({onNav}) {
+      const price = useGoldPrice();
+      return e('div',{className:'container'},
+        e('div',{className:'grid grid-3'},
+          e('div',{className:'card'}, e('h3',null,'Realtime Gold (1g)'), e('div',null, price ? '$'+price.toFixed(2) : '—')),
+          e('div',{className:'card'}, e('h3',null,'NFT Minting'), e('button',{className:'btn-primary mt', onClick:()=>onNav('/nft')}, 'Mint NFT')),
+          e('div',{className:'card'}, e('h3',null,'Investor'), e('button',{className:'btn-primary mt', onClick:()=>onNav('/investor')}, 'View Dashboard'))
+        ),
+        e('div',{className:'card mt'}, e('h3',null,'Sharia Compliance'), e('p','Asset-backed tokens, no Riba, transparent terms.')),
+        e('div',{className:'card mt'}, e('h3',null,'Latest Blogs'),
+          e('ul',null,
+            e('li',null,'Blockchain in Gold Trading - 2025-11-11'),
+            e('li',null,'NFTs Backed by Gold - 2025-11-10'),
+            e('li',null,'Investing in Gold via Crypto - 2025-11-09')
+          )
+        )
+      );
+    }
+
+    function Wallet({onConnect, walletAddress, optInAssetId}) {
+      const [status,setStatus] = React.useState('');
+      async function connectWallet() {
+        try {
+          const accounts = await peraWallet.connect();
+          if(accounts.length>0) { onConnect(accounts[0]); setStatus('Wallet Connected'); }
+        } catch(e){ setStatus('Failed to connect'); }
+      }
+      async function optIn() {
+        try {
+          // Demo: Opt-in transaction code here
+          setStatus('Opted-in to asset '+optInAssetId);
+        } catch(e){ setStatus('Opt-in failed'); }
+      }
+      return e('div',{className:'container mt'},
+        e('div',{className:'card'}, e('h3',null,'Wallet'), e('button',{className:'btn-primary mt', onClick:connectWallet}, 'Connect Pera Wallet')),
+        walletAddress && e('div',{className:'mt'}, e('button',{className:'btn-primary', onClick:optIn}, 'Opt-in NFT Asset')),
+        status && e('div',{className:'mt'}, status)
+      );
+    }
+
+    function NFTMint() {
+      const [msg,setMsg] = React.useState('');
+      function mint() { setMsg('Minted 1g Gold NFT! (Demo)'); }
+      return e('div',{className:'container mt'},
+        e('div',{className:'card'}, e('h3',null,'NFT Minting'), e('button',{className:'btn-primary mt', onClick:mint}, 'Mint NFT')), 
+        msg && e('div',{className:'mt'},msg)
+      );
+    }
+
+    function Investor() { 
+      return e('div',{className:'container mt'}, e('div',{className:'card'}, e('h3',null,'Investor Dashboard'), e('p','Portfolio & KYC (demo)'))); 
+    }
+
+    function App() {
+      const [route,setRoute] = React.useState(location.hash.replace('#','') || '/');
+      const [walletAddress,setWallet] = React.useState(null);
+
+      React.useEffect(()=>{
+        const onHashChange = ()=>setRoute(location.hash.replace('#','') || '/');
+        window.addEventListener('hashchange', onHashChange);
+        return ()=>window.removeEventListener('hashchange', onHashChange);
+      },[]);
+
+      function onConnect(addr){ setWallet(addr); }
+
+      let page;
+      if(route==='/' ) page = e(Home,{onNav:p=>location.hash=p});
+      else if(route==='/wallet') page = e(Wallet,{onConnect:onConnect, walletAddress:walletAddress, optInAssetId:12345});
+      else if(route==='/nft') page = e(NFTMint,null);
+      else if(route==='/investor') page = e(Investor,null);
+      else page = e('div',null,'Page not found');
+
+      return e('div',null, e(Header,{onNav:p=>location.hash=p, walletAddress:walletAddress, signOut:()=>setWallet(null)}), page, e('footer',{className:'container'}, '© '+new Date().getFullYear()+' GoldChain Demo'));
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(e(App));
+  </script>
+</body>
+</html>
