@@ -16,7 +16,7 @@ public class ApiClient {
     private static final String API_KEY = "weex_e0ee9ae2c9befaee21aa7a03d90f4e48"; // Replace with your actual API Key
     private static final String SECRET_KEY = "15b5a8dd630b866565cf0934c04cc4acbdc77f55c37c69f28306fe2b750b2baa"; // Replace with your actual Secret Key
     private static final String ACCESS_PASSPHRASE = "weex00001214"; // Replace with your actual Access Passphrase
-    private static final String BASE_URL = "https://api.weex.com"; // Replace with your actual API address
+    private static final String BASE_URL = "https://api-contract.weex.com"; // Replace with your actual API address
     // Generate signature (POST request)
     public static String generateSignature(String secretKey, String timestamp, String method, String requestPath, String queryString, String body) throws Exception {
         String message = timestamp + method.toUpperCase() + requestPath + queryString + body;
