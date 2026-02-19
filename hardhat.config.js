@@ -6,7 +6,8 @@ module.exports = {
   networks: {
     cronosTestnet: {
       url: "https://evm-t3.cronos.org",
-      accounts: [process.env.PRIVATE_KEY],
-    },
-  },
+      accounts: [process.env.PRIVATE_KEY]
+    }
+  }
 };
+
