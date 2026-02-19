@@ -1,6 +1,7 @@
-require("@nomicfoundation/hardhat-toolbox");
+import "@nomicfoundation/hardhat-toolbox";
+import "dotenv/config";
 
-module.exports = {
+export default {
   solidity: "0.8.20",
   networks: {
     cronosTestnet: {
