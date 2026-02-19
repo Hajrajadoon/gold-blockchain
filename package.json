@@ -1,0 +1,17 @@
+{
+  "name": "gold-blockchain",
+  "version": "1.0.0",
+  "description": "Gold Financial System Blockchain Project",
+  "main": "index.js",
+  "scripts": {
+    "compile": "npx hardhat compile",
+    "deploy": "npx hardhat run scripts/deploy.js --network cronosTestnet"
+  },
+  "author": "Hajra Bibi",
+  "license": "MIT",
+  "devDependencies": {
+    "hardhat": "^2.28.6",
+    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+    "dotenv": "^16.3.1"
+  }
+}
