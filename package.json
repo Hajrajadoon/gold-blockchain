@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Gold Financial System Blockchain Project",
   "main": "index.js",
+  "type": "commonjs",
   "scripts": {
     "compile": "npx hardhat compile",
     "deploy": "npx hardhat run scripts/deploy.js --network cronosTestnet"
@@ -15,3 +16,4 @@
     "dotenv": "^16.3.1"
   }
 }
+
